@@ -1,0 +1,47 @@
+# Local/dev stack: Django API + PostgreSQL.
+#   docker compose up --build
+# Values come from the environment or a .env file (see .env.example); the
+# defaults below let it start with zero configuration for local use only.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ticketing}
+      POSTGRES_USER: ${POSTGRES_USER:-ticketing}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ticketing_dev_password}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    image: halcyon-ticketing:${IMAGE_TAG:-local}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-secret-key-please-change-0123456789}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
+      DJANGO_ENV: ${DJANGO_ENV:-development}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0}
+      POSTGRES_DB: ${POSTGRES_DB:-ticketing}
+      POSTGRES_USER: ${POSTGRES_USER:-ticketing}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ticketing_dev_password}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      RESERVATION_HOLD_MINUTES: ${RESERVATION_HOLD_MINUTES:-15}
+      MAX_SEATS_PER_RESERVATION: ${MAX_SEATS_PER_RESERVATION:-10}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-1}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-1}
+
+volumes:
+  pgdata:
