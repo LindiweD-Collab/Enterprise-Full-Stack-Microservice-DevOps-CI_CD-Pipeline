@@ -25,7 +25,7 @@ Double-booking is prevented by the database itself, not only by application chec
 Requirements: Docker with the Compose plugin.
 
 ```bash
-git clone <repo-url> halcyon-ticketing && cd halcyon-ticketing
+git clone [<repo-url>](https://github.com/LindiweD-Collab/Enterprise-Full-Stack-Microservice-DevOps-CI_CD-Pipeline) halcyon-ticketing && cd halcyon-ticketing
 docker compose up --build
 ```
 
