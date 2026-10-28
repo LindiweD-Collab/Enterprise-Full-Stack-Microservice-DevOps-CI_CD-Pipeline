@@ -9,3 +9,6 @@ htmlcov/
 db.sqlite3
 staticfiles/
 .env
+docker-compose.override.yml
+docker-compose.override.yml
+docker-compose.override.yml

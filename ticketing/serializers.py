@@ -109,7 +109,8 @@ class EventSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_by", "created_at", "updated_at"]
 
     def get_seats_total(self, obj) -> int:
-        return getattr(obj, "seats_total", obj.venue.seats.count())
+        annotated = getattr(obj, "seats_total", None)
+        return annotated if annotated is not None else obj.venue.seats.count()
 
     def get_seats_available(self, obj) -> int:
         total = self.get_seats_total(obj)
